@@ -1,5 +1,5 @@
-#ifndef APP_PUBLIC_H
-#define	APP_PUBLIC_H
+#ifndef RECEIVE_PUBLIC_H
+#define	RECEIVE_PUBLIC_H
 
 #include <xc.h> 
 
@@ -7,11 +7,13 @@
 extern "C" {
 #endif /* __cplusplus */
 
+    // Public declaration for adding to receive queue
     int addQRcv(char letter);
+    void updateClock();
     
 #ifdef	__cplusplus
 }
 #endif /* __cplusplus */
 
-#endif	/* APP_PUBLIC_H */
+#endif	/* RECEIVE_PUBLIC_H */
 

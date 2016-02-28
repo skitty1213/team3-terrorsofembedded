@@ -1,5 +1,5 @@
-#ifndef _APP1_H
-#define _APP1_H
+#ifndef _SEND_H
+#define _SEND_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -19,15 +19,25 @@ extern "C" {
 
 typedef struct
 {
+    // Queue to send to uart isr
     QueueHandle_t sendQueue;
+    // Tracks current place in word to be sent
+    uint8_t currentOutIndex;
+    // Message to be sent
+    char messageOut[8];
 } SEND_DATA;
 
-void APP1_Initialize ( void );
+// Initialization of timer, queues and values
+void SEND_Initialize ( void );
 
-void APP_Tasks( void );
+// Event loop, reads from send queue
+void SEND_Tasks( void );
+
+// Assembles outbound message, then sends characters
+void assembleSend(char letter);
 
 
-#endif /* _APP1_H */
+#endif /* _SEND_H */
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

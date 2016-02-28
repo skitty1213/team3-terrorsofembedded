@@ -1,5 +1,5 @@
-#ifndef APP1_PUBLIC_H
-#define	APP1_PUBLIC_H
+#ifndef SEND_PUBLIC_H
+#define	SEND_PUBLIC_H
 
 #include <xc.h> 
 
@@ -7,11 +7,12 @@
 extern "C" {
 #endif /* __cplusplus */
 
+    // Public declaration for adding to send queue
     int addQSnd(char letter);
     
 #ifdef	__cplusplus
 }
 #endif /* __cplusplus */
 
-#endif	/* APP1_PUBLIC_H */
+#endif	/* SEND_PUBLIC_H */
 
