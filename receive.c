@@ -2,6 +2,7 @@
 #include "receive.h"
 #include "receive_public.h"
 #include "debug.h"
+#include "command_types.h"
 
 // Instance of struct
 RCV_DATA rcvData;
@@ -20,8 +21,8 @@ void RECEIVE_Initialize ( void )
     rcvData.currentIndex = 0;
     timer_initialize(100);
     DRV_USART0_Initialize();
-    rcvData.match = 1;
     rcvData.clock = 0;
+    rcvData.sequence = 100;
     traces(RECEIVE_INIT_EXIT);
 }
 
@@ -41,27 +42,87 @@ void updateClock()
     rcvData.clock++;
 }
 
-char myMess[8] = "~gotit!)";
+void processCommand()
+{
+    char outType = 255;
+    char x_out = 0;
+    char y_out = 0;
+    char o_out = 0;
+    
+    // Tracks sequence number of incoming command in case it requires an ack
+    rcvData.ack_no = rcvData.message[2]<<8 + rcvData.message[3];
+    
+    // Determines Message Type
+    rcvData.type = rcvData.message[1];
+    
+    if (rcvData.type == LEAD_POSITION)
+    {
+        rcvData.xPos = rcvData.message[4];
+        rcvData.yPos = rcvData.message[5];
+        rcvData.orient = rcvData.message[6];
+        rcvData.ready = false;
+        return;
+    }
+    else if (rcvData.type == DISTANCE_MOVED)
+    {
+        rcvData.delta_x = rcvData.message[4];
+        rcvData.ready = false;
+        return;
+    }
+    else if (rcvData.type == AWAITING_INSTRUCTION)
+    {
+        rcvData.ready = true;
+        return;
+    }
+    else if (rcvData.type == DEBUG_FORWARD)
+    {
+        outType = MOVE_FORWARD;
+        x_out = rcvData.message[4];
+    }
+    else if (rcvData.type == DEBUG_BACK)
+    {
+        outType = MOVE_BACK;
+        x_out = rcvData.message[4];
+    }
+    else if (rcvData.type == DEBUG_STOP)
+    {
+        rcvData.ready = true;
+        outType = STOP_LEAD;
+    }
+    else if (rcvData.type == DEBUG_TURN)
+    {
+        outType = TURN;
+        o_out = rcvData.message[6];
+    }
+    
+    if (rcvData.ready)
+    {
+        rcvData.sequence++;
+        addQSnd(START);
+        addQSnd(outType);
+        addQSnd(rcvData.sequence/256);
+        addQSnd(rcvData.sequence%256);
+        addQSnd(x_out);
+        addQSnd(0);
+        addQSnd(o_out);
+        addQSnd(END);
+    }
+    rcvData.ready = false;
+}
+
 // Assembles instructions as char from uart arrive
 void checkReceive(char letter)
 {
     traces(CHECK_RECEIVE_ENTER);
-    int i;
+    
     // Starts new received word when start character arrives
     if (letter == START)
     {
         traces(CHECK_RECEIVE_START_CHAR);
         rcvData.currentIndex = 0;
     }
-    
     // Stores current letter in word
     rcvData.message[rcvData.currentIndex] = letter;
-    
-    // Determines if the incoming message matches the previous outgoing command
-    if (letter != myMess[rcvData.currentIndex])
-    {
-        rcvData.match = 0;
-    }
     
     // Indicates word has been properly assembled
     if (letter == END && rcvData.currentIndex == 7)
@@ -69,14 +130,11 @@ void checkReceive(char letter)
         traces(CHECK_RECEIVE_WORD_DONE);
         rcvData.currentIndex = 0;
         // Sends message out
-        if (!rcvData.match)
+        if ((rcvData.message[2]<<8 + rcvData.message[3]) != rcvData.sequence)
         {
-            for (i=0;i<8;i++)
-            {
-                addQSnd(myMess[i]);
-            }
+            // Send message out
+            processCommand();
         }
-        rcvData.match = 1;
     }
     
     // Out of bounds without end character

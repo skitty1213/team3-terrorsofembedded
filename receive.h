@@ -41,8 +41,17 @@ typedef struct
     uint8_t yPos;
     uint8_t orient;
     
-    // A boolean to prevent from reading echos of messages sent as new instructions
-    bool match;
+    // Distance traveled
+    uint8_t delta_x;
+    uint8_t x_goal;
+    uint8_t delta_angle;
+    uint8_t angle_goal;
+    
+    // Sequence number of incoming message
+    uint16_t ack_no;
+        
+    // Determines if rover is asking for a command
+    bool ready;
     
     // A clock variable to time event
     int clock;
@@ -57,6 +66,9 @@ void RECEIVE_Tasks( void );
 
 // Assembles incoming messages to ensure complete
 void checkReceive(char letter);
+
+// Processes the command to be sent
+void processCommand();
 
 
 
