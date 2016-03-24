@@ -13,6 +13,9 @@ extern "C" {
 
     void timer_initialize(int ms);
     void timerCallback( TimerHandle_t myTimer );
+    
+    void timer_initiaize_20(int ms); 
+    void timerCallback_20( TimerHandle_t secondTimer); 
 
 #ifdef	__cplusplus
 }

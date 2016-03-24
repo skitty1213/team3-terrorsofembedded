@@ -1,6 +1,10 @@
 #include "timer_setup.h"
-#include "app_public.h"
+#include "receive_public.h"
+#include "send_public.h"
+#include "debug.h"
+#include "pixy_public.h"
 
+// Initializes timer to specified period in ms
 void timer_initialize(int ms)
 {
     TimerHandle_t myTimer1;
@@ -13,14 +17,30 @@ void timer_initialize(int ms)
         error('a');
 }
 
-int i=0;
-char text[8] = "(Team#3;";
+// Increments clock
 void timerCallback( TimerHandle_t myTimer )
 {
-    // Sends to queue using public function
-    addQRcv(text[i%8]);
-    //sendValueQ1('-');
-    //assembleRcv(text[i%8]);
-    i++;
+    traces(TIMER_CALLBACK_ENTER);
+    updateClock();
+    //void sendtoServer(void); // testing 
+
+    traces(TIMER_CALLBACK_EXIT);
 }
 
+void timer_initiaize_20(int ms){
+        TimerHandle_t myTimer2;
+    myTimer2 = xTimerCreate("test2",
+                           (ms/portTICK_PERIOD_MS),
+                           pdTRUE, 
+                           (void *)0,
+                           timerCallback_20);
+    if (xTimerStart(myTimer2,10) == pdFAIL)
+        error('a');
+    
+} 
+
+void timerCallback_20( TimerHandle_t secondTimer){
+    
+    
+    
+}
