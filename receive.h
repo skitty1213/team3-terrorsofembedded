@@ -29,32 +29,71 @@ typedef struct
     QueueHandle_t rcvQueue;
     // Tracks current place in received word
     uint8_t currentIndex;
-    // Assembles message
+    // Assembles incoming message
     char message[8];
     
-    // The message type, determines who it applies to
-    char type;
-    // Sequence number of message
-    uint16_t sequence;
-    // Position information
+    bool firstPass;
+    
+    int xGoal;
+    int yGoal;
+    char board[6][6];
+    uint8_t square_x;
+    uint8_t square_y;
+    uint8_t way_x[3];
+    uint8_t way_y[3];
+    
+    // Outgoing Message details
+    char type_out;
+    uint16_t sequence_out;
     uint8_t xPos;
     uint8_t yPos;
-    uint8_t orient;
+    int orient;
     
     // Distance traveled
     uint8_t delta_x;
-    uint8_t x_goal;
+    //uint8_t x_goal;
     uint8_t delta_angle;
-    uint8_t angle_goal;
+    //uint8_t angle_goal;
     
-    // Sequence number of incoming message
+    // Info from incoming message
     uint16_t ack_no;
+    char type_in;
+    uint8_t x_in;
+    uint8_t y_in;
+    uint8_t angle_in;
         
-    // Determines if rover is asking for a command
-    bool ready;
+    // Determines is ready for a command
+    bool loc_ready;
+    bool mov_ready;
+    bool obs_ready;
+    bool config_ready;
+    bool started;
     
+    bool turning;
+    
+    int x_wp[60];
+	int y_wp[60];
+	uint8_t index;
+	uint8_t build_index;
+    uint8_t token_index;
+    uint8_t retrieved_index;
+    bool token_retrieved[3];
+    bool up;
+    bool done;
+    
+    uint8_t numObs;
+    uint8_t obs_x[3];
+    uint8_t obs_y[3];
+    uint8_t obs_square_x[3];
+	uint8_t obs_square_y[3];
+    uint8_t numToks;
+    uint8_t tok_x[3];
+    uint8_t tok_y[3];
     // A clock variable to time event
     int clock;
+    
+    int tempx;
+	int tempy;
     
 } RCV_DATA;
 
@@ -69,6 +108,36 @@ void checkReceive(char letter);
 
 // Processes the command to be sent
 void processCommand();
+
+// Moves towards next goal
+void goToGoal();
+
+// Sends turn command
+void turn(uint8_t degree);
+
+// Sends forward command
+void goForward(uint8_t x);
+
+// Sends lead rover stop command
+void stop();
+
+// Sends message saying unique token found
+void token();
+
+// Determines waypoints
+void setPoints();
+
+// Checks if all obstacle positions are known
+bool checkObs();
+
+// Corrects course if rover deviating
+void maintainLine();
+
+// Adds waypoint to list
+void addWaypoint(int x, int y);
+
+// Returns if square is obstacle
+bool isObs(int x, int y);
 
 
 

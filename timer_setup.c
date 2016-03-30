@@ -19,8 +19,6 @@ void timer_initialize(int ms)
 // Increments clock
 void timerCallback( TimerHandle_t myTimer )
 {
-    traces(TIMER_CALLBACK_ENTER);
     updateClock();
-    traces(TIMER_CALLBACK_EXIT);
 }
 

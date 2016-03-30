@@ -10,7 +10,6 @@
 // UART interrupt handler
 void IntHandlerDrvUsartInstance0(void)
 {
-    traces(ISR_ENTER);
     char letter;
     letter = DRV_USART0_ReadByte();
     addQRcv(letter);
@@ -30,7 +29,6 @@ void IntHandlerDrvUsartInstance0(void)
     PLIB_INT_SourceFlagClear(INT_ID_0, INT_SOURCE_USART_1_TRANSMIT);
     PLIB_INT_SourceFlagClear(INT_ID_0, INT_SOURCE_USART_1_RECEIVE);
     PLIB_INT_SourceFlagClear(INT_ID_0, INT_SOURCE_USART_1_ERROR);
-    traces(ISR_EXIT);
 }
  
  
