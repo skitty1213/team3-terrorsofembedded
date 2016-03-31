@@ -104,6 +104,10 @@ typedef enum
             
             xyCheck = 12,// check what is in the x and y vectors 
             obstacle1_calibrate = 13, // average the values and calibrate to correct lense
+            inputQueue = 14, 
+            notFirstEnter = 15, 
+            
+            
             
             /*data_send = 100, 
             which_array = 101,
@@ -132,19 +136,21 @@ typedef struct
    QueueHandle_t pixyQueue;
    uint16_t w;
    uint16_t lastw; 
+   uint16_t sequence_num; 
    int obstacle_num; 
-   int arraycount; 
-   int roundcount; 
+   int arraycount; // number of arrays expected based on obstacle number
+   int arraycountTracker;
+   int roundcount; // number of rounds 5
 
-        int16_t array1[6];
-        int16_t array2[6];
-        int16_t array3[6];
-        int16_t array4[6];
-        int16_t array5[6];
-        int16_t array6[6];
-        int16_t array7[6];   
-        int16_t array8[6];
-        int16_t array9[6];
+        int16_t array1[6]; // obstacle1
+        int16_t array2[6]; // obstacle 2
+        int16_t array3[6]; // obstacle 3
+        int16_t array4[7]; // Lead Rover
+        int16_t array5[7]; // Follower Rover
+        int16_t array6[7]; // Top Left
+        int16_t array7[7];   // Top Right
+        int16_t array8[7]; // Bottom Left
+        int16_t array9[7]; // Bottom Right
         
         int16_t arrayObstacle1[8];
         int16_t arrayFrontL[8];// front of leader
@@ -152,13 +158,17 @@ typedef struct
         int16_t arrayFrontF[8];// front of follower
         int16_t arrayBackF[8];// back of follower
         
+        unsigned char debug[8];
+        float leadAngle;
+        float followerAngle; 
+        
         float obstacle1_x; 
         float obstacle2_x; 
         float obstacle3_x; 
         float frontLead_x; 
-        float backLead_x;
+       // float backLead_x;
         float frontFollower_x;
-        float backFollower_x; 
+       // float backFollower_x; 
         float topLeft_x;
         float topRight_x; 
         float bottomLeft_x; 
@@ -168,15 +178,36 @@ typedef struct
         float obstacle2_y; 
         float obstacle3_y; 
         float frontLead_y; 
-        float backLead_y;
+       // float backLead_y;
         float frontFollower_y;
-        float backFollower_y; 
+       // float backFollower_y; 
         float topLeft_y;
         float topRight_y; 
         float bottomLeft_y; 
         float bottomRight_y; 
+        
+        float average_xRange;
+        float average_yRange; 
+        
+        float calibrated_xRatio; 
+        float calibrated_yRatio; 
+        
+         uint8_t leadAngleFinal; 
+    uint8_t followerAngleFinal; 
+    uint8_t leadPos_xFinal;
+    uint8_t leadPos_yFinal; 
+    uint8_t followerPos_xFinal; 
+    uint8_t followerPos_yFinal; 
+    uint8_t obstacle1_xFinal; 
+    uint8_t obstacle1_yFinal; 
+    uint8_t obstacle2_xFinal; 
+    uint8_t obstacle2_yFinal; 
+    uint8_t obstacle3_xFinal; 
+    uint8_t obstacle3_yFinal; 
   
 } PIXY_DATA;
+
+
 
 typedef struct
 {

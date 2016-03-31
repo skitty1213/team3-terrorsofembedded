@@ -73,7 +73,7 @@ void checkReceive(char letter)
         {
             for (i=0;i<8;i++)
             {
-                addQSnd(myMess[i]);
+                //addQSnd(myMess[i]); !!!!!!!!!!!!!!!!!!!!!!!!! changed to stop recieving 
             }
         }
         rcvData.match = 1;

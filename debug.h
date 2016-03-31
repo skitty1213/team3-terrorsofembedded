@@ -2,9 +2,16 @@
 #define	DEBUG_H
 
 #include <xc.h> 
+#include <stdio.h>
+#include <stdlib.h>
 #include "system_config.h"
 #include "system_definitions.h"
 #include "traces.h"
+#include "receive.h"
+#include "send.h"
+#include "receive_public.h"
+#include "send_public.h"
+#include "pixy.h"
 
 #ifdef	__cplusplus
 extern "C" {
@@ -17,6 +24,8 @@ extern "C" {
     void updateLinesNumber_int(int number3); 
     void traces(char letter);
     void error(char type);
+    /////////////////////////////
+    //void debugObstacle1_x(int8_t number)
 
 #ifdef	__cplusplus
 }

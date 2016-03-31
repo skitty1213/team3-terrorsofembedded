@@ -44,6 +44,12 @@ extern "C" {
    uint16_t getWord(void); 
    uint8_t getByte(void); 
    void sendtoServer(void); 
+   void calculateAngle(void); 
+   void calculateCoordinates (void); 
+   void debuggingQueue(void);
+   void resetData(void);
+   void putinWiflyQueue(int8_t number);
+   //void outputVariableData(void);
    //void getByte(void); 
    //uint8_t word; 
 

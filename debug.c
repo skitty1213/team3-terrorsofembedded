@@ -49,3 +49,4 @@ void traces(char letter)
     PLIB_PORTS_DirectionOutputSet (PORTS_ID_0, PORT_CHANNEL_A, 0xFF);
     PLIB_PORTS_Write(PORTS_ID_0, PORT_CHANNEL_A, letter);   
 }
+
