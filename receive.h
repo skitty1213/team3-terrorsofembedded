@@ -45,8 +45,8 @@ typedef struct
     // Outgoing Message details
     char type_out;
     uint16_t sequence_out;
-    uint8_t xPos;
-    uint8_t yPos;
+    int xPos;
+    int yPos;
     int orient;
     
     // Distance traveled
@@ -80,6 +80,8 @@ typedef struct
     bool token_retrieved[3];
     bool up;
     bool done;
+    
+    int timer_threshold;
     
     uint8_t numObs;
     uint8_t obs_x[3];

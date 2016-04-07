@@ -62,6 +62,9 @@ void RECEIVE_Initialize ( void )
     
     rcvData.token_index = 0;
     rcvData.retrieved_index = 0;
+    rcvData.timer_threshold = 0;
+    
+    rcvData.numToks = 1;
 }
 
 // Adds character to received queue
@@ -93,6 +96,8 @@ void goForward(uint8_t x)
 
 void turn(uint8_t degree)
 {
+    // initiates a one second wait on each turn to gather position info
+    rcvData.timer_threshold = rcvData.clock+10;
     rcvData.turning = true;
     rcvData.sequence_out++;
     addQSnd(START);
@@ -374,19 +379,19 @@ void goToGoal()
     if (rcvData.y_wp[rcvData.index]*30+10 > rcvData.yPos)
     {
         // need to turn
-        if ((rcvData.orient < 89 || rcvData.orient > 91) && !rcvData.turning)
+        if ((rcvData.orient < 85 || rcvData.orient > 95) && !rcvData.turning)
         {
             turn ((270 - rcvData.orient)%180);
         }
         // off center, and pointing moreso **optional code**
         else if ((rcvData.xPos > rcvData.x_wp[rcvData.index]*30+20) && (rcvData.orient >= 90) && !rcvData.turning)
         {
-            turn(179);
+            turn(177);
         }
         // **optional code**
         else if ((rcvData.xPos < rcvData.x_wp[rcvData.index]*30+10) && (rcvData.orient <= 90) && !rcvData.turning)
         {
-            turn(1);
+            turn(3);
         }
         // already going down
         else
@@ -399,7 +404,7 @@ void goToGoal()
     else if (rcvData.y_wp[rcvData.index]*30+20 < rcvData.yPos)
     {
         // need to turn
-        if ((rcvData.orient < 179 && rcvData.orient > 1) && !rcvData.turning)
+        if ((rcvData.orient < 175 && rcvData.orient > 5) && !rcvData.turning)
         {
             turn ((180 - rcvData.orient)%180);
         }
@@ -485,6 +490,11 @@ void processCommand()
         return;
     }
     
+    if (rcvData.clock < rcvData.timer_threshold)
+    {
+        return;
+    }
+    
     // Lead Rover Position from Sensors
     if (rcvData.type_in == 0x10)
     {
@@ -498,7 +508,7 @@ void processCommand()
         rcvData.board [rcvData.square_x][rcvData.square_y] = '1';
         
         //  Calls course correction if needed;
-        if (!rcvData.turning && rcvData.started && ((rcvData.orient > 3 && rcvData.orient < 44) || (rcvData.orient > 46 && rcvData.orient < 89) || (rcvData.orient > 91 && rcvData.orient < 134) || (rcvData.orient > 136 && rcvData.orient < 179)))
+        if (!rcvData.turning && rcvData.started && ((rcvData.orient > 3 && rcvData.orient < 42) || (rcvData.orient > 48 && rcvData.orient < 87) || (rcvData.orient > 93 && rcvData.orient < 132) || (rcvData.orient > 138 && rcvData.orient < 177)))
             stop();
         maintainLine();
         return;
@@ -599,6 +609,15 @@ void processCommand()
             rcvData.done = true;
             stopAll();
         }
+        rcvData.sequence_out++;
+        addQSnd(START);
+        addQSnd(0x77);
+        addQSnd(rcvData.sequence_out/256);
+        addQSnd(rcvData.sequence_out%256);
+        addQSnd(rcvData.retrieved_index);
+        addQSnd(rcvData.numToks);
+        addQSnd(0x00);
+        addQSnd(END);
         return;
     }
 }
