@@ -192,18 +192,20 @@ typedef struct
         float calibrated_xRatio; 
         float calibrated_yRatio; 
         
-         uint8_t leadAngleFinal; 
-    uint8_t followerAngleFinal; 
-    uint8_t leadPos_xFinal;
-    uint8_t leadPos_yFinal; 
-    uint8_t followerPos_xFinal; 
-    uint8_t followerPos_yFinal; 
-    uint8_t obstacle1_xFinal; 
-    uint8_t obstacle1_yFinal; 
-    uint8_t obstacle2_xFinal; 
-    uint8_t obstacle2_yFinal; 
-    uint8_t obstacle3_xFinal; 
-    uint8_t obstacle3_yFinal; 
+         uint16_t leadAngleFinal; 
+    uint16_t followerAngleFinal; 
+    uint16_t leadPos_xFinal;
+    uint16_t leadPos_yFinal; 
+    uint16_t followerPos_xFinal; 
+    uint16_t followerPos_yFinal; 
+    
+    uint16_t obstacle1_xFinal; 
+    
+    uint16_t obstacle1_yFinal; 
+    uint16_t obstacle2_xFinal; 
+    uint16_t obstacle2_yFinal; 
+    uint16_t obstacle3_xFinal; 
+    uint16_t obstacle3_yFinal; 
   
 } PIXY_DATA;
 

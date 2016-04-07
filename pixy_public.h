@@ -49,6 +49,7 @@ extern "C" {
    void debuggingQueue(void);
    void resetData(void);
    void putinWiflyQueue(int8_t number);
+   void sendObstacle1(void);
    //void outputVariableData(void);
    //void getByte(void); 
    //uint8_t word; 
