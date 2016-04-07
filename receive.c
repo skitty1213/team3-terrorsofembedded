@@ -384,12 +384,12 @@ void goToGoal()
             turn ((270 - rcvData.orient)%180);
         }
         // off center, and pointing moreso **optional code**
-        else if ((rcvData.xPos > rcvData.x_wp[rcvData.index]*30+20) && (rcvData.orient >= 90) && !rcvData.turning)
+        else if ((rcvData.xPos > rcvData.x_wp[rcvData.index]*30+20) && (rcvData.orient > 92) && !rcvData.turning)
         {
             turn(177);
         }
         // **optional code**
-        else if ((rcvData.xPos < rcvData.x_wp[rcvData.index]*30+10) && (rcvData.orient <= 90) && !rcvData.turning)
+        else if ((rcvData.xPos < rcvData.x_wp[rcvData.index]*30+10) && (rcvData.orient < 88) && !rcvData.turning)
         {
             turn(3);
         }
@@ -411,12 +411,12 @@ void goToGoal()
         // off center, and pointing moreso
         else if ((rcvData.xPos > rcvData.x_wp[rcvData.index]*30+20) && (rcvData.orient > 178) && !rcvData.turning)
         {
-            turn(1);
+            turn(3);
         }
         // **optional code**
         else if ((rcvData.xPos < rcvData.x_wp[rcvData.index]*30+10) && (rcvData.orient < 2) && !rcvData.turning)
         {
-            turn(179);
+            turn(177);
         }
         // already going up
         else
@@ -433,6 +433,16 @@ void goToGoal()
         {
             turn ((225 - rcvData.orient)%180);
         }
+        // off center, and pointing moreso
+        else if ((rcvData.yPos > rcvData.y_wp[rcvData.index]*30+20) && (rcvData.orient > 47) && !rcvData.turning)
+        {
+            turn(177);
+        }
+        // **optional code**
+        else if ((rcvData.yPos < rcvData.y_wp[rcvData.index]*30+10) && (rcvData.orient < 43) && !rcvData.turning)
+        {
+            turn(3);
+        }
         // already going left
         else
         {
@@ -447,6 +457,16 @@ void goToGoal()
         if ((rcvData.orient < 134 || rcvData.orient > 136) && !rcvData.turning)
         {
             turn ((315 - rcvData.orient)%180);
+        }
+        // off center, and pointing moreso
+        else if ((rcvData.yPos > rcvData.y_wp[rcvData.index]*30+20) && (rcvData.orient > 137) && !rcvData.turning)
+        {
+            turn(177);
+        }
+        // **optional code**
+        else if ((rcvData.yPos < rcvData.y_wp[rcvData.index]*30+10) && (rcvData.orient < 133) && !rcvData.turning)
+        {
+            turn(3);
         }
         // already going right
         else 
