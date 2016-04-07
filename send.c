@@ -38,7 +38,6 @@ void assembleSend(char letter)
     sendData.currentOutIndex++;
     if (sendData.currentOutIndex > 7)
     {
-        //updateLines('B');
         for (i=0;i<8;i++)
         {
             DRV_USART0_WriteByte(sendData.messageOut[i]);

@@ -2,7 +2,8 @@
 #include "receive_public.h"
 #include "send_public.h"
 #include "debug.h"
-#include "pixy_public.h"
+#include "motor_control.h"
+
 
 // Initializes timer to specified period in ms
 void timer_initialize(int ms)
@@ -17,30 +18,20 @@ void timer_initialize(int ms)
         error('a');
 }
 
+
+
 // Increments clock
 void timerCallback( TimerHandle_t myTimer )
 {
     traces(TIMER_CALLBACK_ENTER);
     updateClock();
-    //void sendtoServer(void); // testing 
-
+    PID_Controller(); 
+    Turningtime(); 
+    Distancetime();
+    serverstuff();
     traces(TIMER_CALLBACK_EXIT);
+    //slowQueue();  
 }
 
-void timer_initiaize_20(int ms){
-        TimerHandle_t myTimer2;
-    myTimer2 = xTimerCreate("test2",
-                           (ms/portTICK_PERIOD_MS),
-                           pdTRUE, 
-                           (void *)0,
-                           timerCallback_20);
-    if (xTimerStart(myTimer2,10) == pdFAIL)
-        error('a');
-    
-} 
 
-void timerCallback_20( TimerHandle_t secondTimer){
-    
-    
-    
-}
+

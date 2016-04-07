@@ -10,6 +10,7 @@ extern "C" {
     // Public declaration for adding to receive queue
     int addQRcv(char letter);
     void updateClock();
+   
     
 #ifdef	__cplusplus
 }

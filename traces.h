@@ -32,11 +32,6 @@ extern "C" {
 #define ISR_ENTER                       24
 #define ISR_EXIT                        25
 
-#define PIXY_LEAVE_QUEUE                26
-#define PIXY_ENTER_QUEUE                27
-#define PIXY_ENTER_ISR                  28
-#define PIXY_LEAVE_ISR                  29
-
 #ifdef	__cplusplus
 }
 #endif

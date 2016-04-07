@@ -11,10 +11,6 @@ extern "C" {
 #endif /* __cplusplus */
 
     void updateLines(char letter);
-    void updateLinesNumber (int8_t number);
-    void updateLinesNumber2(int8_t number2); 
-    //void updateLinesNumber16(int16_t number2); 
-    void updateLinesNumber_int(int number3); 
     void traces(char letter);
     void error(char type);
 
