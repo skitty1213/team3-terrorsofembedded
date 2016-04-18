@@ -23,7 +23,7 @@ void timerCallback( TimerHandle_t myTimer )
     traces(TIMER_CALLBACK_ENTER);
     updateClock();
     //void sendtoServer(void); // testing 
-
+    //SEND_Initialize ( ); 
     traces(TIMER_CALLBACK_EXIT);
 }
 

@@ -36,15 +36,22 @@ void assembleSend(char letter)
     int i;
     sendData.messageOut[sendData.currentOutIndex] = letter;
     sendData.currentOutIndex++;
+    
+        //updateLinesNumber(0x0a);
+        //updateLinesNumber(sendData.currentOutIndex);
     if (sendData.currentOutIndex > 7)
     {
+        //updateLinesNumber(0x0b);
+        //updateLinesNumber(i);
         //updateLines('B');
         for (i=0;i<8;i++)
         {
+            //updateLinesNumber(0x0c);
             DRV_USART0_WriteByte(sendData.messageOut[i]);
+            //updateLinesNumber(sendData.messageOut[i]);/////////////////gets here
         }
         sendData.currentOutIndex = 0;
-        PLIB_INT_SourceEnable(INT_ID_0, INT_SOURCE_USART_1_TRANSMIT);
+        //PLIB_INT_SourceEnable(INT_ID_0, INT_SOURCE_USART_1_TRANSMIT);
     }
     traces(ASSEMBLE_SEND_EXIT);
 }
@@ -60,6 +67,7 @@ void SEND_Tasks ( void )
         xQueueReceive(sendData.sendQueue, &letter, portMAX_DELAY);
         traces(SEND_TASKS_AFTER_QUEUE);
         assembleSend(letter);
+        //updateLinesNumber(letter); // its zero 
     }
 }
  

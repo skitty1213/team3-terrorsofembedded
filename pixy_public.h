@@ -50,6 +50,11 @@ extern "C" {
    void resetData(void);
    void putinWiflyQueue(int8_t number);
    void sendObstacle1(void);
+   void sendLeadRover(void);
+   void finishedObstactle1(); 
+   void finishedLeadRover(); 
+   void finishedFollowerRover();
+   void calculateCoordincatesWithAngles(void); 
    //void outputVariableData(void);
    //void getByte(void); 
    //uint8_t word; 

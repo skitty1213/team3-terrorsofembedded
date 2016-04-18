@@ -56,8 +56,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <math.h>
 #include "system_config.h"
 #include "system_definitions.h"
+#include "receive_public.h"
+#include "send_public.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -191,6 +194,8 @@ typedef struct
         
         float calibrated_xRatio; 
         float calibrated_yRatio; 
+        
+        float angle_degree; 
         
          uint16_t leadAngleFinal; 
     uint16_t followerAngleFinal; 

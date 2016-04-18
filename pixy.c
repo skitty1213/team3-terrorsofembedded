@@ -14,6 +14,8 @@
 
  *******************************************************************************/
 
+////////////////////////////////////////////////////////////////////////////////////////
+
 #include "pixy.h"
 #include "pixy_public.h"
 #include "timer_setup.h"
@@ -112,6 +114,7 @@ int addQ_fromPxy(int16_t coord)
     traces(PIXY_ENTER_QUEUE);
     if (xQueueSendFromISR (pixyData.pixyQueue, &coord, 0) != pdTRUE)
         error('b');
+    //updateLinesNumber(0x0a);
     traces(PIXY_LEAVE_QUEUE);
     //updateLines('c');
 }
@@ -131,9 +134,9 @@ uint16_t getWord(void)
   uint16_t front; 
   uint16_t back;
   c = getByte();
-  updateLinesNumber(c);
+ // updateLinesNumber(c);/////////////////////////////////////////////////////////////////
   w = getByte();
-  updateLinesNumber(w);
+ // updateLinesNumber(w);/////////////////////////////////////////////////////////////////
   
   updateLinesNumber2(0xaa);
   w = w << 8;// original
@@ -154,22 +157,28 @@ uint16_t getWord(void)
 
 void sendtoServer(void)
 {
+    addQSnd('~');
+  addQSnd('A');
   addQSnd('A');
   addQSnd('N');
   addQSnd('N');
   addQSnd('A');
-  addQSnd('\n');
-  PLIB_INT_SourceEnable(INT_ID_0, INT_SOURCE_USART_1_TRANSMIT);
+  addQSnd('n');
+  addQSnd(')');
+  //PLIB_INT_SourceEnable(INT_ID_0, INT_SOURCE_USART_1_TRANSMIT);
+  //updateLinesNumber(0x0a); 
 }
 
 void calculateCoordinates(void)
 {
-    updateLinesNumber2(0x56); 
+    updateLinesNumber2(0x56);
     pixyData.average_xRange = pixyData.topRight_x - pixyData.topLeft_x; 
     pixyData.average_xRange = ((pixyData.bottomRight_x - pixyData.bottomLeft_x ) + pixyData.average_xRange)/2.0; // range of the x
     
+   
     pixyData.average_yRange = pixyData.bottomLeft_y - pixyData.topLeft_y; 
     pixyData.average_yRange = ((pixyData.bottomRight_y - pixyData.topRight_y ) + pixyData.average_yRange)/2.0;// range of the y 
+   
     
     pixyData.calibrated_xRatio = (720/ pixyData.average_xRange); // inches for now
     pixyData.calibrated_yRatio = (720/ pixyData.average_yRange); 
@@ -182,12 +191,54 @@ void calculateCoordinates(void)
     pixyData.obstacle1_xFinal = (pixyData.obstacle1_x - pixyData.topLeft_x) * pixyData.calibrated_xRatio; 
     pixyData.obstacle1_yFinal = (pixyData.obstacle1_y - pixyData.topLeft_y) * pixyData.calibrated_yRatio; 
     
+    updateLinesNumber2(0x78);///////////////////////////////////////////////////////////////////////////
+    updateLinesNumber2(pixyData.obstacle1_xFinal >> 8);
+    updateLinesNumber2(pixyData.obstacle1_xFinal);
+    
+    updateLinesNumber2(pixyData.obstacle1_yFinal >> 8);
+    updateLinesNumber2(pixyData.obstacle1_yFinal);
+    
     /*pixyData.obstacle2_xFinal; 
     pixyData.obstacle2_yFinal; 
     pixyData.obstacle3_xFinal; 
     pixyData.obstacle3_yFinal; */
     
     updateLinesNumber2(0x78); 
+}
+
+void calculateCoordincatesWithAngles(void)
+{
+    float val;
+    val = 180.0/ 3.14159265; 
+    
+    pixyData.angle_degree = atan( (pixyData.topRight_y - pixyData.topLeft_y)/ (pixyData.topRight_x - pixyData.topLeft_x) ); 
+    
+   
+    pixyData.average_xRange = pixyData.topRight_x - pixyData.topLeft_x; 
+    pixyData.average_xRange = ((pixyData.bottomRight_x - pixyData.bottomLeft_x ) + pixyData.average_xRange)/2.0; // range of the x
+    
+   
+    pixyData.average_yRange = pixyData.bottomLeft_y - pixyData.topLeft_y; 
+    pixyData.average_yRange = ((pixyData.bottomRight_y - pixyData.topRight_y ) + pixyData.average_yRange)/2.0;// range of the y 
+   
+    
+    pixyData.calibrated_xRatio = (720/ pixyData.average_xRange); // inches for now
+    pixyData.calibrated_yRatio = (720/ pixyData.average_yRange); 
+    
+   
+    pixyData.leadPos_xFinal = pixyData.frontLead_x * pixyData.calibrated_xRatio; // change later to complete
+    pixyData.leadPos_yFinal = pixyData.frontLead_y * pixyData.calibrated_yRatio; // change later to complete
+    pixyData.followerPos_xFinal = pixyData.frontFollower_x * pixyData.calibrated_xRatio; // change later to complete
+    pixyData.followerPos_yFinal = pixyData.frontFollower_y * pixyData.calibrated_yRatio; // change later to complete
+   // pixyData.obstacle1_xFinal = (pixyData.obstacle1_x - pixyData.topLeft_x) * pixyData.calibrated_xRatio; 
+   // pixyData.obstacle1_yFinal = (pixyData.obstacle1_y - pixyData.topLeft_y) * pixyData.calibrated_yRatio; 
+    
+    //pixyData.obstacle1_xFinal = (pixyData.obstacle1_x * cos(pixyData.angle_degree) - pixyData.obstacle1_y * sin(pixyData.angle_degree) - pixyData.topLeft_x) * pixyData.calibrated_xRatio;
+    //pixyData.obstacle1_yFinal = (pixyData.obstacle1_x * cos(pixyData.angle_degree) - pixyData.obstacle1_y * sin(pixyData.angle_degree)- pixyData.topLeft_y) * pixyData.calibrated_yRatio;
+    pixyData.obstacle1_xFinal = (pixyData.obstacle1_x * cos(pixyData.angle_degree) - pixyData.obstacle1_y * sin(pixyData.angle_degree) - pixyData.topLeft_x) * pixyData.calibrated_xRatio;
+    pixyData.obstacle1_yFinal = (pixyData.obstacle1_x * sin(pixyData.angle_degree) + pixyData.obstacle1_y * cos(pixyData.angle_degree)- pixyData.topLeft_y) * pixyData.calibrated_yRatio;
+    
+    
 }
 
 void calculateAngle(void)
@@ -214,12 +265,19 @@ void calculateAngle(void)
        pixyData.leadAngle = pixyData.leadAngle + 90; 
    }
    ////////////////////////////////////////////////////////////////////////////////////////
-    if ( pixyData.followerAngle < 0){ // convert the values of negative pixy values
+   
+    
+      if ( pixyData.followerAngle <= 0){ // convert the values of negative pixy values
         
         pixyData.followerAngle = 180 + ( 180 - abs(pixyData.followerAngle) ); 
     }
    
-   if (pixyData.followerAngle < 45){
+    /*if (pixyData.followerAngle > 265 && pixyData.followerAngle < 275)
+    {
+        pixyData.followerAngle = 225; 
+    }
+    else {*/
+   if (pixyData.followerAngle <= 45){
        
        pixyData.followerAngle = 360 + (pixyData.followerAngle - 45); 
    }
@@ -227,16 +285,26 @@ void calculateAngle(void)
        pixyData.followerAngle = pixyData.followerAngle - 45; 
    }
     
-    if (pixyData.followerAngle > 270){// convert to rover location 
+    if (pixyData.followerAngle >= 270){// convert to rover location 
        
        pixyData.followerAngle = (pixyData.followerAngle + 90) - 360; 
    } 
    else {// from 0 to 315
        pixyData.followerAngle = pixyData.followerAngle + 90; 
    }
+    //}
+    
+    uint16_t update =  pixyData.followerAngle; 
+     updateLinesNumber2(0x34);////////////////////////////////////////////////////////
+    updateLinesNumber2(update >> 8); 
+    updateLinesNumber2(update); 
+    
+    //updateLinesNumber2(pixyData.leadAngle); //gets here fine
    
    pixyData.leadAngleFinal = pixyData.leadAngle/2; 
-   pixyData.followerAngleFinal = pixyData.followerAngle/2; 
+   pixyData.followerAngleFinal = pixyData.followerAngle/2;
+   
+   
     
    updateLinesNumber2(0x34); 
 }
@@ -494,13 +562,76 @@ void sendObstacle1()
     PLIB_INT_SourceEnable(INT_ID_0, INT_SOURCE_USART_1_TRANSMIT);
 }
 
+void finishedObstactle1(){
+    
+    uint16_t conversionx;
+    uint16_t conversiony;
+    
+    pixyData.sequence_num ++;
+    uint8_t a = pixyData.sequence_num >> 8; 
+    uint8_t b = pixyData.sequence_num; 
+    
+    conversionx = pixyData.obstacle1_xFinal;// twice as big!!
+    conversiony = pixyData.obstacle1_yFinal; 
+    
+   // uint16_t testingConversion;
+    
+    addQSnd('~');
+    addQSnd(0x11);
+    addQSnd(a);// sequence number
+    addQSnd(b); // sequence number
+    addQSnd(conversionx); // x position 
+    addQSnd(conversiony);
+    addQSnd(0x00);// orientation none 
+    addQSnd(')');
+}
+
+void finishedLeadRover(){
+    
+    uint16_t conversionx;
+    uint16_t conversiony;
+    
+    pixyData.sequence_num ++;
+    uint8_t a = pixyData.sequence_num >> 8; 
+    uint8_t b = pixyData.sequence_num; 
+    
+    pixyData.leadPos_xFinal = pixyData.leadPos_xFinal * (2.54/10);
+    pixyData.leadPos_yFinal = pixyData.leadPos_yFinal * (2.54/10); 
+    
+    conversionx = pixyData.leadPos_xFinal;// twice as big!!
+    conversiony = pixyData.leadPos_yFinal; 
+    
+   uint16_t conversionAngle =  pixyData.leadAngleFinal;
+    
+    addQSnd('~');
+    addQSnd(0x10);
+    addQSnd(a); // sequence number
+    addQSnd(b); // sequence number
+    addQSnd(conversionx);
+    addQSnd(conversiony);
+    addQSnd(conversionAngle);
+    addQSnd(')');
+} 
+            
+void finishedFollowerRover(){
+    
+   /* addQSnd('~');
+    addQSnd(0x15);
+    addQSnd(b);
+    addQSnd(c); 
+    addQSnd(d);
+    addQSnd(e);
+    addQSnd(f);
+    addQSnd(')');*/
+}
+
 
 void PIXY_Tasks ( void )
 {
     uint16_t data1; 
     uint16_t front; 
     uint16_t back;
-
+    //sendtoServer();///////////////////////////////////////////////////////////////////////////////////
     switch ( pixyData.state )
     {
         case PIXY_STATE_INIT:
@@ -515,6 +646,7 @@ void PIXY_Tasks ( void )
             pixyData.state = get_zeros; /////////////////////////////////get_zeros originally 
             pixyData.debug[0] = '~'; 
             pixyData.debug[7] = ')'; 
+            //sendtoServer(); 
         }
             break; //////////////////////////////////////////////////////////////////////////////
         case get_byte:// get byte
@@ -567,6 +699,7 @@ void PIXY_Tasks ( void )
             break; //////////////////////////////////////////////////////////////////////////////
         case get_nonzeros:
         {
+            //sendtoServer(); ////////////////////////////////////////////////////////////////////
             updateLinesNumber2(0x0c); 
             pixyData.w = getWord();
             
@@ -1013,8 +1146,11 @@ void PIXY_Tasks ( void )
         
         calculateAngle(); 
         
-        calculateCoordinates(); 
+        //calculateCoordinates(); 
+        calculateCoordincatesWithAngles(); 
+        
         //putinWiflyQueue(followerAngle_float);// case1
+        //putinWiflyQueue(leadAngle_float);
         sendObstacle1(); // case2
         
           updateLinesNumber2(0x88); //gets here fine 
@@ -1024,6 +1160,9 @@ void PIXY_Tasks ( void )
         case inputQueue: // for testing stuff
         {
             updateLinesNumber2(0x9A);
+            //finishedObstactle1(); 
+            //finishedLeadRover(); 
+            //finishedFollowerRover(); 
             //debuggingQueue(); 
             resetData(); 
             pixyData.lastw = pixyData.w;
